@@ -1,0 +1,12 @@
+ame: RivalMine
+version: '1.0-SNAPSHOT'
+main: org.migrate1337.rivalmine.RivalMine
+api-version: '1.16'
+depend: [PlaceholderAPI]
+commands:
+  setpoints:
+    description: "Получить предмет для выделения точек."
+  createautomine:
+    description: "Получить предмет для выделения точек."
+  updateautomine:
+    description: "Обновляет автошахту на основе данных в конфигурации."
