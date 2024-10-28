@@ -5,10 +5,6 @@ api-version: '1.16'
 depend: [PlaceholderAPI]
 commands:
   rivalmine:
-    description: "XD"
   setpoints:
-    description: "Получить предмет для выделения точек."
   createautomine:
-    description: "Получить предмет для выделения точек."
   updateautomine:
-    description: "Обновляет автошахту на основе данных в конфигурации."
