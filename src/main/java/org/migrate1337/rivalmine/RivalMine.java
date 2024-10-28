@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -18,6 +19,7 @@ import org.migrate1337.rivalmine.utils.MineType;
 
 public class RivalMine extends JavaPlugin {
     private MineManager mineManager;
+    private BukkitAudiences adventure;
     private final HashMap<Player, AutoMine> playerMines = new HashMap<>();
     private final Map<Player, Location[]> selections = new HashMap<>();
     private final List<AutoMine> allAutoMines = new ArrayList<>();
@@ -43,8 +45,9 @@ public class RivalMine extends JavaPlugin {
         this.getCommand("createautomine").setExecutor(new CreateAutoMine(this));
         this.getCommand("updateautomine").setExecutor(this.updateAutoMine);
         this.getCommand("setpoints").setExecutor(new SetPoints(this));
-        this.getLogger().info("Commands registered.");
         getCommand("updateautomine").setTabCompleter(new UpdateAutoMineTabCompleter(this));
+
+        this.getLogger().info("Commands registered.");
         Bukkit.getPluginManager().registerEvents(new PlayerClickListener(this), this);
         this.getLogger().info("Events registered.");
         this.getLogger().info("RivalMine successfully loaded.");
@@ -53,7 +56,6 @@ public class RivalMine extends JavaPlugin {
         List<AutoMine> allAutoMines = this.mineManager.loadAllMines();
         this.allAutoMines.addAll(allAutoMines);
 
-        // Start auto-update for all mines
         for (AutoMine mine : this.allAutoMines) {
             String mineName = mine.getName();
             Location firstPoint = mine.getFirstPoint();
@@ -61,7 +63,6 @@ public class RivalMine extends JavaPlugin {
             ConfigurationSection mineSection = this.getConfig().getConfigurationSection("mines." + mineName);
 
             if (mineSection != null) {
-                // Ensure that selectedMineType is passed correctly
                 MineType selectedMineType = this.mineManager.selectMineType(this.mineManager.loadMineTypes(mineName));
                 this.updateAutoMine.startAutoUpdate(mineName, firstPoint, secondPoint, mineSection, null);
                 this.getLogger().info("Auto-update for mine '" + mineName + "' started.");
@@ -90,6 +91,10 @@ public class RivalMine extends JavaPlugin {
 
     public MineManager getMineManager() {
         return this.mineManager;
+    }
+
+    public BukkitAudiences getAdventure() {
+        return this.adventure;
     }
 
     public void onDisable() {

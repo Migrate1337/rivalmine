@@ -1,5 +1,9 @@
 package org.migrate1337.rivalmine.commands;
 
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -9,8 +13,8 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.migrate1337.rivalmine.RivalMine;
-import org.migrate1337.rivalmine.mines.AutoMine;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +28,7 @@ public class RivalMineCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        Player player = (Player) sender;
         if (args.length == 0) {
             sender.sendMessage("        §x§C§F§7§7§1§5R§x§D§4§8§6§1§7i§x§D§9§9§5§1§9v§x§D§D§A§4§1§Ba§x§E§2§B§3§1§Dl§x§E§7§C§2§1§EM§x§E§C§D§1§2§0i§x§F§0§E§0§2§2n§x§F§5§E§F§2§4e                       ");
             sender.sendMessage("§eVersion: §f" + plugin.getDescription().getVersion());
@@ -41,7 +46,7 @@ public class RivalMineCommand implements CommandExecutor, TabCompleter {
 
         } else if (args[0].equalsIgnoreCase("delete")) {
             if (args.length < 2) {
-                    sender.sendMessage(ChatColor.RED + "Specify the name of the mine to remove.");
+                sender.sendMessage(ChatColor.RED + "Specify the name of the mine to remove.");
                 return true;
             }
             String mineName = args[1];
@@ -54,6 +59,9 @@ public class RivalMineCommand implements CommandExecutor, TabCompleter {
             plugin.saveConfig();
             sender.sendMessage(ChatColor.GREEN + "Mine '" + mineName + "' successfully deleted.");
 
+        } else if (args[0].equalsIgnoreCase("placeholders")) {
+            sender.sendMessage("                            §x§C§F§7§7§1§5R§x§D§4§8§6§1§7i§x§D§9§9§5§1§9v§x§D§D§A§4§1§Ba§x§E§2§B§3§1§Dl§x§E§7§C§2§1§EM§x§E§C§D§1§2§0i§x§F§0§E§0§2§2n§x§F§5§E§F§2§4e                       ");
+            sendPlaceholdersMessage(sender);
         } else if (args[0].equalsIgnoreCase("list")) {
             ConfigurationSection minesSection = plugin.getConfig().getConfigurationSection("mines");
             if (minesSection != null) {
@@ -90,6 +98,48 @@ public class RivalMineCommand implements CommandExecutor, TabCompleter {
     private String formatLocation(Location location) {
         return "World: " + location.getWorld().getName() + ", X: " + location.getBlockX() + ", Y: " + location.getBlockY() + ", Z: " + location.getBlockZ();
     }
+    private void sendPlaceholdersMessage(CommandSender sender) {
+
+        TextComponent remainingTime = createPlaceholderComponent(
+                "%rivalmine_remaining_time_Mine%",
+                "Click to copy",
+                ChatColor.YELLOW
+        );
+
+        TextComponent remainingTimeMessage = new TextComponent("§8- ");
+        remainingTimeMessage.addExtra(remainingTime);
+        remainingTimeMessage.addExtra(" - §fDisplays remaining time until mine update.");
+
+        sender.spigot().sendMessage(remainingTimeMessage);
+
+        TextComponent currentMineType = createPlaceholderComponent(
+                "%rivalmine_current_mine_type_Mine%",
+                "Click to copy",
+                ChatColor.YELLOW
+        );
+        TextComponent currentMineTypeMessage = new TextComponent("§8- ");
+        currentMineTypeMessage.addExtra(currentMineType);
+        currentMineTypeMessage.addExtra(" - §fDisplays the current mine type.");
+        sender.spigot().sendMessage(currentMineTypeMessage);
+
+        TextComponent nextMineType = createPlaceholderComponent(
+                "%rivalmine_next_mine_type_Mine%",
+                "Click to copy",
+                ChatColor.YELLOW
+        );
+        TextComponent nextMineTypeMessage = new TextComponent("§8- ");
+        nextMineTypeMessage.addExtra(nextMineType);
+        nextMineTypeMessage.addExtra(" - §fDisplays the next mine type.");
+        sender.spigot().sendMessage(nextMineTypeMessage);
+    }
+
+    private TextComponent createPlaceholderComponent(String placeholder, String hoverText, ChatColor color) {
+        TextComponent textComponent = new TextComponent(placeholder);
+        textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(hoverText)));
+        textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, placeholder));
+        textComponent.setColor(net.md_5.bungee.api.ChatColor.valueOf(color.name()));
+        return textComponent;
+    }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
@@ -100,7 +150,7 @@ public class RivalMineCommand implements CommandExecutor, TabCompleter {
             completions.add("placeholders");
             completions.add("list");
             completions.add("delete");
-        }else if (args.length == 2 && args[0].equalsIgnoreCase("delete")) {
+        } else if (args.length == 2 && args[0].equalsIgnoreCase("delete")) {
             Set<String> mineNames = plugin.getConfig().getConfigurationSection("mines").getKeys(false);
             completions.addAll(mineNames);
         }
