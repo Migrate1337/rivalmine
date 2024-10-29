@@ -13,17 +13,19 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.migrate1337.rivalmine.RivalMine;
+import org.migrate1337.rivalmine.gui.MineMenu;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 public class RivalMineCommand implements CommandExecutor, TabCompleter {
     private final RivalMine plugin;
+    private final MineMenu mineMenu;
 
     public RivalMineCommand(RivalMine plugin) {
         this.plugin = plugin;
+        this.mineMenu = plugin.getMineMenu();
     }
 
     @Override
@@ -44,6 +46,9 @@ public class RivalMineCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage("§8- §e/rivalmine list - §fList all mines.");
             sender.sendMessage("§8- §e/plugman reload RivalMine - §fReload config (Currently only through Plugman).");
 
+        } else if(args[0].equalsIgnoreCase("list")){
+            mineMenu.openMenu(player);
+            player.sendMessage("§eYou opened GUI menu.");
         } else if (args[0].equalsIgnoreCase("delete")) {
             if (args.length < 2) {
                 sender.sendMessage(ChatColor.RED + "Specify the name of the mine to remove.");
@@ -62,33 +67,6 @@ public class RivalMineCommand implements CommandExecutor, TabCompleter {
         } else if (args[0].equalsIgnoreCase("placeholders")) {
             sender.sendMessage("                            §x§C§F§7§7§1§5R§x§D§4§8§6§1§7i§x§D§9§9§5§1§9v§x§D§D§A§4§1§Ba§x§E§2§B§3§1§Dl§x§E§7§C§2§1§EM§x§E§C§D§1§2§0i§x§F§0§E§0§2§2n§x§F§5§E§F§2§4e                       ");
             sendPlaceholdersMessage(sender);
-        } else if (args[0].equalsIgnoreCase("list")) {
-            ConfigurationSection minesSection = plugin.getConfig().getConfigurationSection("mines");
-            if (minesSection != null) {
-                sender.sendMessage("§eMines list:");
-                for (String mineName : minesSection.getKeys(false)) {
-                    ConfigurationSection mineSection = minesSection.getConfigurationSection(mineName);
-                    String world = mineSection.getString("world", "unknown");
-                    Location firstPoint = new Location(
-                            plugin.getServer().getWorld(world),
-                            mineSection.getInt("firstPoint.x"),
-                            mineSection.getInt("firstPoint.y"),
-                            mineSection.getInt("firstPoint.z")
-                    );
-                    Location secondPoint = new Location(
-                            plugin.getServer().getWorld(world),
-                            mineSection.getInt("secondPoint.x"),
-                            mineSection.getInt("secondPoint.y"),
-                            mineSection.getInt("secondPoint.z")
-                    );
-
-                    sender.sendMessage("§e- §f" + mineName + ":");
-                    sender.sendMessage("  §aFirst point: §f" + formatLocation(firstPoint));
-                    sender.sendMessage("  §aSecond point: §f" + formatLocation(secondPoint));
-                }
-            } else {
-                sender.sendMessage("§e-");
-            }
         } else {
             sender.sendMessage("§cUnknown command. Use §e/rivalmine help §cfor a list of commands.");
         }
