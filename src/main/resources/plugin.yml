@@ -1,5 +1,5 @@
 name: RivalMine
-version: '1.0.2'
+version: '1.0.3'
 main: org.migrate1337.rivalmine.RivalMine
 api-version: '1.16'
 depend: [PlaceholderAPI]
